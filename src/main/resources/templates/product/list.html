@@ -1,5 +1,5 @@
 <!--
-날짜 : 2023/02/08
+날짜 : 2023/02/08~
 이름 : 김동근
 내용 : Kmarket2 SpringBoot product list
 -->
@@ -38,7 +38,7 @@
             </div>
             <div class="logo">
                 <div>
-                    <a href="#"><img th:src="@{/img/header_logo.png}" alt="로고"></a>
+                    <a href="#"><img th:src="@{/images/header_logo.png}" alt="로고"></a>
                     <form action="#">
                         <input type="text" name="keyword">
                         <button><i class="fa fa-search" aria-hidden="true"></i></button>
@@ -152,42 +152,26 @@
 
               <!-- 상품목록 -->              
               <table border="0">                  
-                <tbody><tr>
+                <tbody>
+                <tr th:each="product:${products}">
                   <td><a href="#" class="thumb"><img src="https://via.placeholder.com/120x120" alt="상품이미지"></a></td>
                   <td>
-                    <h3 class="name">상품명</h3>
-                    <a href="#" class="desc">상품설명</a>
+                    <h3>
+                    	<a th:href="@{product/view(no=${product.prodNo})}" class="name">[[${product.prodName}]]</a>
+                    </h3>
+                    <span class="desc">[[${product.descript}]]</span>
                   </td>
                   <td>
                     <ul>
-                      <li><ins class="dis-price">27,000</ins></li>
                       <li>
-                        <del class="org-price">30,000</del>
-                        <span class="discount">10%</span>
+                      	<ins class="dis-price" th:text="${#numbers.formatInteger(product.getDisPrice(), 0, 'COMMA')}"></ins>
                       </li>
-                      <li><span class="free-delivery">무료배송</span></li>
-                    </ul>
-                  </td>
-                  <td>
-                    <h4 class="seller"><i class="fas fa-home" aria-hidden="true"></i>&nbsp;판매자</h4>
-                    <h5 class="badge power">판매자등급</h5>
-                    <h6 class="rating star1">상품평</h6>
-                  </td>
-                </tr>
-                <tr>
-                  <td><a href="#" class="thumb"><img src="https://via.placeholder.com/120x120" alt="상품이미지"></a></td>
-                  <td>
-                    <h3 class="name">[[${test.prodName}]]</h3>
-                    <a href="#" class="desc">상품설명</a>
-                  </td>
-                  <td>
-                    <ul>
-                      <li><ins class="dis-price">27,000</ins></li>
                       <li>
-                        <del class="org-price">30,000</del>
-                        <span class="discount">10%</span>
+                        <del class="org-price" th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}"></del>
+                        <span class="discount">[[${product.discount}]]%</span>
                       </li>
-                      <li><span class="free-delivery">무료배송</span></li>
+                      <li><span class="free" th:if="${product.delivery == 0}">무료배송</span></li>
+                      <li><span class="delivery" th:unless="${product.delivery == 0}" th:text="${#numbers.formatInteger(product.delivery, 0, 'COMMA')}"></span></li>
                     </ul>
                   </td>
                   <td>

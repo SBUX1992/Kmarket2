@@ -52,11 +52,12 @@
   font-size: 16px;
   font-weight: bold;
   color: #111;
-  margin-bottom: 6px;
 }
 #product > .list > table .desc {
+	display: block;
   font-size: 12px;
   color: #333;
+  margin-top: 6px;
 }
 
 #product > .list > table .desc:hover {
@@ -79,14 +80,20 @@
 }
 #product > .list > table .discount::after {content: "↓";}
 
-#product > .list > table .free-delivery {
+#product > .list > table .free {
   display: inline-block;
   font-size: 0;
   vertical-align: text-bottom;
   width: 55px;
   height: 13px;
-  background: url('../img/ico_free_delivery.gif') no-repeat;
+  background: url('/Kmarket2/product/images/ico_free_delivery.gif') no-repeat;
   margin-top: 4px;
+}
+#product > .list > table .delivery:before {
+  content: "배송비 ";
+}
+#product > .list > table .delivery:after {
+  content: "원";
 }
 
 #product > .list > table .seller {  
