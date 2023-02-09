@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kr.co.kmarket2.service.MemberService;
+import kr.co.kmarket2.vo.MemberVO;
 import kr.co.kmarket2.vo.TermsVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +27,19 @@ public class MemberController {
 	@GetMapping("member/register")
 	public String register() {
 		return "member/register";
+	}
+	
+	@PostMapping("member/register")
+	public String register(MemberVO vo, HttpServletRequest req) {
+		String regip = req.getRemoteAddr();
+		int result = service.insertMember(vo);
+		return "redirect:/user/login?success="+result;
+	}
+	
+	
+	@GetMapping("member/registerSeller")
+	public String registerSeller() {
+		return "member/registerSeller";
 	}
 	
 	
