@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -20,21 +22,23 @@ public class SecurityConfig{
 		http.cors().and().csrf().disable();
 		
 		//인가(접근권한) 설정
-		http.authorizeHttpRequests().requestMatchers("/").permitAll()
+		http.authorizeHttpRequests().requestMatchers("/**").permitAll()		// _header 로그인/비로그인 화면표시 구분으로 인해 ** 추가 (강중현)
 			.requestMatchers("/product/**").permitAll()
 			.requestMatchers("/member/**").permitAll()
+			.requestMatchers("/cs/**").permitAll()
 			//static 폴더 권한
+			.requestMatchers("/file/**").permitAll()
 			.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
 		//http.authorizeHttpRequests().requestMatchers("/board/write").hasAnyRole("3", "4", "5");
 		
 		//로그인 설정
 		http.formLogin()
 		.loginPage("/member/login")
-		.defaultSuccessUrl("/index")
+		.defaultSuccessUrl("/")
 		.failureUrl("/member/login?success=100")
 		.usernameParameter("uid")
 		.passwordParameter("pass");
-		
+
 		//로그아웃 설정
 		http.logout()
 		.invalidateHttpSession(true)
@@ -44,5 +48,10 @@ public class SecurityConfig{
 		
 		return http.build();
 	}
+	
+	@Bean
+    public PasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
+    }
 	
 }
