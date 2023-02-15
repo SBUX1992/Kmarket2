@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,21 +59,29 @@ public class MemberController {
 	@GetMapping("member/terms")
 	public String terms(Model model) {
 		TermsVO vo = service.selectTerms();
-		log.info("vo : " + vo);
+		//log.info("vo : " + vo);
 		model.addAttribute(vo);
 		return "member/terms";
 	}
 	
+//	@ResponseBody
+//	@GetMapping("member/checkUid")
+//	public Map<String, Integer> checkUid(String uid) {
+//		int result = service.countMember(uid);
+//		Map<String, Integer> map = new HashMap<>();
+//		map.put("result", result);
+//		
+//		return map;
+//	}
+	
+	//아이디 중복체크
+	@PostMapping("member/checkUid")
 	@ResponseBody
-	@GetMapping("member/checkUid")
 	public Map<String, Integer> checkUid(String uid) {
-		int result = service.countMember(uid);
+		int chk = service.countMember(uid);
 		Map<String, Integer> map = new HashMap<>();
-		map.put("result", result);
-		
+		map.put("chk", chk);
 		return map;
 	}
-	
-	
 	
 }

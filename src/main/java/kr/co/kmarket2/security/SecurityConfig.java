@@ -1,12 +1,13 @@
 
 package kr.co.kmarket2.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,6 +17,17 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig{
 	
+	@Autowired
+	AccessDeniedHandlerImpl accessDeniedHandler;
+	@Autowired
+	AuthenticationEntryPointImpl authenticationEntryPoint;
+	
+	@Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        // 정적 자원에 대해서 Security를 적용하지 않음으로 설정
+        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+	
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
@@ -23,14 +35,19 @@ public class SecurityConfig{
 		http.cors().and().csrf().disable();
 		
 		//인가(접근권한) 설정
-		http.authorizeHttpRequests().requestMatchers("/**").permitAll()		// _header 로그인/비로그인 화면표시 구분으로 인해 ** 추가 (강중현)
-			.requestMatchers("/product/**").permitAll()
+		http.authorizeHttpRequests()
+			.requestMatchers("/**").permitAll()
 			.requestMatchers("/member/**").permitAll()
-			.requestMatchers("/cs/**").permitAll()
-			//static 폴더 권한
-			.requestMatchers("/file/**").permitAll()
-			.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
+			.requestMatchers("/product/cart").authenticated()	// 로그인 해야만 접근가능
+			.requestMatchers("/product/**").permitAll()
+			.requestMatchers("/file/**").permitAll();			//외부링크 허용
 		//http.authorizeHttpRequests().requestMatchers("/board/write").hasAnyRole("3", "4", "5");
+
+		
+		//로그인 alert
+		http.exceptionHandling()
+			.accessDeniedHandler(accessDeniedHandler)
+			.authenticationEntryPoint(authenticationEntryPoint);
 		
 		//로그인 설정
 		http.formLogin()
@@ -49,6 +66,8 @@ public class SecurityConfig{
 		
 		return http.build();
 	}
+	
+	
 	
 	@Bean
     public PasswordEncoder encoder() {
