@@ -72,6 +72,10 @@
 		</if>
 	</select>
 	
+	<update id="updateProductHit">
+		UPDATE `km_product` SET `hit` = `hit`+1 WHERE `prodNo`=#{prodNo};
+	</update>
+	
 	<!-- product/cart -->
 	<select id="selectCarts" resultType="CartVO">
 		SELECT a.*, b.`prodName`, b.`descript`, b.`thumb1` 
@@ -95,8 +99,50 @@
 			point 	= #{point},
 			delivery= #{delivery},
 			total 	= #{total},
-			rdate 	= NOW()
+			rdate 	= NOW();
 	</insert>
 	
+	<delete id="deleteCart">
+		DELETE FROM `km_product_cart` WHERE `uid`=#{uid} AND `prodNo`=#{prodNo};
+	</delete>
+	
+	<!-- product/complete -->
+	<insert id="insertOrder" useGeneratedKeys="true" keyColumn="ordNo" keyProperty="ordNo">
+		INSERT INTO `km_product_order` SET 
+		uid 		= #{uid},
+		ordCount	= #{ordCount},
+		ordPrice	= #{ordPrice},
+		ordDiscount	= #{ordDiscount},
+		ordDelivery	= #{ordDelivery},
+		savePoint	= #{savePoint},
+		usedPoint	= #{usedPoint},
+		ordTotPrice	= #{ordTotPrice},
+		recipName	= #{recipName},
+		recipHp		= #{recipHp},
+		recipZip	= #{recipZip},
+		recipAddr1	= #{recipAddr1},
+		recipAddr2	= #{recipAddr2},
+		ordPayment	= #{ordPayment},
+		ordComplete	= '1',
+		ordDate		= NOW();
+	</insert>
+	
+	<insert id="insertOrderItem">
+		INSERT INTO `km_product_order_item` SET 
+		ordNo	=#{ordNo},
+		prodNo	=#{prodNo},
+		count	=#{count},
+		price	=#{price},
+		discount=#{discount},
+		point	=#{point},
+		delivery=#{delivery},
+		total	=#{total}
+	</insert>
+	
+	<update id="updateOrder">
+		UPDATE `km_product_order` SET 
+		ordComplete	= #{ordComplete} 
+		WHERE ordNo = #{ordNo};
+	</update>
 	
 </mapper>
